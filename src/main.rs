@@ -1,5 +1,7 @@
+mod commands;
 mod webhook;
 
+use crate::commands::answer;
 use teloxide::prelude::*;
 use teloxide::{respond, Bot};
 use webhook::webhook;
@@ -11,13 +13,5 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repl_with_listener(
-        bot.clone(),
-        |message| async move {
-            message.answer_dice().await?;
-            respond(())
-        },
-        webhook(bot).await,
-    )
-    .await;
+    teloxide::repl_with_listener(bot.clone(), answer, webhook(bot).await).await;
 }
