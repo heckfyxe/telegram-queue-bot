@@ -1,5 +1,8 @@
-use teloxide::{Bot, respond};
+mod webhook;
+
 use teloxide::prelude::*;
+use teloxide::{respond, Bot};
+use webhook::webhook;
 
 #[tokio::main]
 async fn main() {
@@ -8,8 +11,13 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repl(bot, |message| async move {
-        message.answer_dice().await?;
-        respond(())
-    }).await;
+    teloxide::repl_with_listener(
+        bot.clone(),
+        |message| async move {
+            message.answer_dice().await?;
+            respond(())
+        },
+        webhook(bot).await,
+    )
+    .await;
 }
