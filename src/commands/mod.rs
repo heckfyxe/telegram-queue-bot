@@ -1,3 +1,6 @@
+mod keyboard;
+
+use crate::commands::keyboard::general_keyboard;
 use std::error::Error;
 use teloxide::prelude::*;
 use teloxide::utils::command::BotCommand;
@@ -5,6 +8,8 @@ use teloxide::utils::command::BotCommand;
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
 pub enum Command {
+    #[command(description = "start")]
+    Start,
     #[command(description = "display this text.")]
     Help,
     #[command(description = "handle a username.")]
@@ -18,6 +23,11 @@ pub async fn answer(
     command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
+        Command::Start => {
+            cx.answer("Вставай, самурай, и занимай очередь!")
+                .reply_markup(general_keyboard())
+                .await?
+        }
         Command::Help => cx.answer(Command::descriptions()).await?,
         Command::Username(username) => {
             cx.answer(format!("Your username is @{}.", username))
