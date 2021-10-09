@@ -1,12 +1,11 @@
-mod keyboard;
-
-use crate::commands::keyboard::general_keyboard;
 use std::error::Error;
+use std::str::FromStr;
 
+use crate::database::DATABASE;
 use strum::{Display, EnumString};
 use teloxide::prelude::*;
 
-use std::str::FromStr;
+use crate::keyboard::general_keyboard;
 
 #[derive(Display, Debug, PartialEq, EnumString)]
 pub enum Command {
@@ -14,8 +13,8 @@ pub enum Command {
     Start,
     #[strum(serialize = "Помощь")]
     Help,
-    #[strum(serialize = "Имя")]
-    Username,
+    #[strum(serialize = "/name")]
+    Username(String),
     #[strum(serialize = "Имя и возраст")]
     UsernameAndAge {
         username: String,
@@ -36,12 +35,17 @@ pub async fn answer(
                 .await?
         }
         Command::Help => cx.answer("Help message").await?,
-        Command::Username => {
-            cx.answer(format!(
-                "Your username is @{}.",
-                cx.update.from().unwrap().username.as_ref().unwrap()
-            ))
-            .await?
+        Command::Username(full_name) => {
+            let nickname = cx.update.from().unwrap().username.as_ref().unwrap();
+            sqlx::query!(
+                "INSERT INTO users(nickname, full_name) VALUES ($1, $2)\
+                 ON CONFLICT (nickname) DO UPDATE SET full_name = $2",
+                nickname,
+                full_name
+            )
+            .execute(DATABASE.get().unwrap())
+            .await?;
+            cx.answer(format!("Теперь ты {}", full_name)).await?
         }
         Command::UsernameAndAge { username, age } => {
             cx.answer(format!(
