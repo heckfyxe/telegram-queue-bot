@@ -7,7 +7,7 @@ use teloxide::utils::command::BotCommand;
 use crate::keyboard::general_keyboard;
 
 #[derive(BotCommand)]
-#[command(rename = "lowercase", parse_with = "split", prefix = "")]
+#[command(parse_with = "split", prefix = "")]
 pub enum Command {
     #[command(rename = "/start")]
     Start,
