@@ -18,5 +18,5 @@ async fn main() {
 
     let bot = Bot::from_env().auto_send();
 
-    teloxide::repl_with_listener(bot.clone(), answer, webhook(bot).await).await;
+    teloxide::commands_repl_with_listener(bot.clone(), "Очередь", answer, webhook(bot).await).await;
 }

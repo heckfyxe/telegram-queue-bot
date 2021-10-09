@@ -1,21 +1,21 @@
 use std::error::Error;
-use std::str::FromStr;
 
 use crate::database::DATABASE;
-use strum::{Display, EnumString};
 use teloxide::prelude::*;
+use teloxide::utils::command::BotCommand;
 
 use crate::keyboard::general_keyboard;
 
-#[derive(Display, Debug, PartialEq, EnumString)]
+#[derive(BotCommand)]
+#[command(rename = "lowercase", parse_with = "split")]
 pub enum Command {
-    #[strum(to_string = "/start")]
+    #[command(rename = "/start")]
     Start,
-    #[strum(serialize = "Помощь")]
+    #[command(rename = "Помощь")]
     Help,
-    #[strum(serialize = "/name")]
+    #[command(rename = "/name")]
     Username(String),
-    #[strum(serialize = "Имя и возраст")]
+    #[command(rename = "Имя и возраст")]
     UsernameAndAge {
         username: String,
         age: u8,
@@ -25,9 +25,8 @@ pub enum Command {
 
 pub async fn answer(
     cx: UpdateWithCx<AutoSend<Bot>, Message>,
+    command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let text = cx.update.text().unwrap();
-    let command = Command::from_str(text).unwrap_or(Command::Unknown);
     match command {
         Command::Start => {
             cx.answer("Вставай, самурай, и занимай очередь!")

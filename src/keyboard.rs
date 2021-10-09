@@ -1,4 +1,3 @@
-use crate::commands::Command;
 use teloxide::types::{KeyboardButton, KeyboardMarkup, ReplyMarkup};
 
 fn kb_markup(keyboard: Vec<Vec<String>>) -> ReplyMarkup {
@@ -13,13 +12,6 @@ fn kb_markup(keyboard: Vec<Vec<String>>) -> ReplyMarkup {
 }
 
 pub fn general_keyboard() -> ReplyMarkup {
-    let commands = vec![
-        Command::Help.to_string(),
-        Command::UsernameAndAge {
-            username: "".to_string(),
-            age: 0,
-        }
-        .to_string(),
-    ];
+    let commands = vec!["Помощь".to_string(), "Имя и возраст".to_string()];
     kb_markup(vec![commands])
 }
