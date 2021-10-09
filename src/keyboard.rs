@@ -15,7 +15,6 @@ fn kb_markup(keyboard: Vec<Vec<String>>) -> ReplyMarkup {
 pub fn general_keyboard() -> ReplyMarkup {
     let commands = vec![
         Command::Help.to_string(),
-        Command::Username("".to_string()).to_string(),
         Command::UsernameAndAge {
             username: "".to_string(),
             age: 0,
