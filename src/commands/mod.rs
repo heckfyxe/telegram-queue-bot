@@ -2,33 +2,40 @@ mod keyboard;
 
 use crate::commands::keyboard::general_keyboard;
 use std::error::Error;
-use teloxide::prelude::*;
-use teloxide::utils::command::BotCommand;
 
-#[derive(BotCommand)]
-#[command(rename = "lowercase", description = "These commands are supported:")]
+use strum::{Display, EnumString};
+use teloxide::prelude::*;
+
+use std::str::FromStr;
+
+#[derive(Display, Debug, PartialEq, EnumString)]
 pub enum Command {
-    #[command(description = "start")]
+    #[strum(to_string = "/start")]
     Start,
-    #[command(description = "display this text.")]
+    #[strum(serialize = "Помощь")]
     Help,
-    #[command(description = "handle a username.")]
+    #[strum(serialize = "Имя")]
     Username(String),
-    #[command(description = "handle a username and an age.", parse_with = "split")]
-    UsernameAndAge { username: String, age: u8 },
+    #[strum(serialize = "Имя и возраст")]
+    UsernameAndAge {
+        username: String,
+        age: u8,
+    },
+    Unknown,
 }
 
 pub async fn answer(
     cx: UpdateWithCx<AutoSend<Bot>, Message>,
-    command: Command,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let text = cx.update.text().unwrap();
+    let command = Command::from_str(text).unwrap_or(Command::Unknown);
     match command {
         Command::Start => {
             cx.answer("Вставай, самурай, и занимай очередь!")
                 .reply_markup(general_keyboard())
                 .await?
         }
-        Command::Help => cx.answer(Command::descriptions()).await?,
+        Command::Help => cx.answer("Help message").await?,
         Command::Username(username) => {
             cx.answer(format!("Your username is @{}.", username))
                 .await?
@@ -40,6 +47,7 @@ pub async fn answer(
             ))
             .await?
         }
+        Command::Unknown => cx.answer("Не понимаю:(").await?,
     };
 
     Ok(())
