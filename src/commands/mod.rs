@@ -1,9 +1,10 @@
 use std::error::Error;
 use teloxide::prelude::*;
+use teloxide::utils::command::BotCommand;
 
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
-enum Command {
+pub enum Command {
     #[command(description = "display this text.")]
     Help,
     #[command(description = "handle a username.")]
