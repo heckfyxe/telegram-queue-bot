@@ -14,15 +14,13 @@ fn kb_markup(keyboard: Vec<Vec<String>>) -> ReplyMarkup {
 
 pub fn general_keyboard() -> ReplyMarkup {
     let commands = vec![
-        String::from(Command::Help.to_string()),
-        String::from(Command::Username(String::new()).to_string()),
-        String::from(
-            Command::UsernameAndAge {
-                username: "".to_string(),
-                age: 0,
-            }
-            .to_string(),
-        ),
+        Command::Help.to_string(),
+        Command::Username.to_string(),
+        Command::UsernameAndAge {
+            username: "".to_string(),
+            age: 0,
+        }
+        .to_string(),
     ];
     kb_markup(vec![commands])
 }

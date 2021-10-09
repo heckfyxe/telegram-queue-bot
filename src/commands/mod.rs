@@ -15,7 +15,7 @@ pub enum Command {
     #[strum(serialize = "Помощь")]
     Help,
     #[strum(serialize = "Имя")]
-    Username(String),
+    Username,
     #[strum(serialize = "Имя и возраст")]
     UsernameAndAge {
         username: String,
@@ -36,9 +36,12 @@ pub async fn answer(
                 .await?
         }
         Command::Help => cx.answer("Help message").await?,
-        Command::Username(username) => {
-            cx.answer(format!("Your username is @{}.", username))
-                .await?
+        Command::Username => {
+            cx.answer(format!(
+                "Your username is @{}.",
+                cx.update.from().unwrap().username.as_ref().unwrap()
+            ))
+            .await?
         }
         Command::UsernameAndAge { username, age } => {
             cx.answer(format!(
